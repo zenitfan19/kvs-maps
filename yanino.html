@@ -1,0 +1,68 @@
+<style>
+    html {
+        overflow: hidden;
+    }
+    </style>
+<div id="yaninoMap">
+</div>
+<script>
+$(document).ready(function () {
+    function Yaninoinit () {
+        var yaninoRoute = new ymaps.multiRouter.MultiRoute({
+            referencePoints: [                
+                "Санкт-Петербург, м. Ладожская",
+                [59.957568,30.600150]
+            ],
+            params: {
+                results: 1
+            }
+        }, {
+            boundsAutoApply: true,
+            routeActiveStrokeWidth: "rgba(0,0,0,0)"
+        });
+        customizeYaninoPoint();
+        
+        function customizeYaninoPoint () {
+            yaninoRoute.model.events.once("requestsuccess", function () {
+                var yandexWayPoint = yaninoRoute.getWayPoints().get(1);
+
+                // Создаем балун у метки второй точки.
+                ymaps.geoObject.addon.balloon.get(yandexWayPoint);
+                yandexWayPoint.options.set({
+                    iconLayout: "default#image",
+                    iconImageHref: "https://www.kvsspb.ru/images/logo.png",
+                    iconImageSize: [40, 36],
+                    iconImageOffset: [-44, -18]
+                });
+            });
+        }
+        
+        var yaninoMap = new ymaps.Map("yaninoMap", {
+            center: [59.950667, 30.574733],
+            zoom: 10,
+            controls: ["zoomControl"]
+        });
+        
+        yaninoMap.behaviors.disable('scrollZoom');
+        
+        yaninoMap.geoObjects.add(yaninoRoute);
+
+        var windowWidth = $(window).width();
+            if(windowWidth < 700) {
+                yaninoMap.behaviors.disable('drag');
+            } else {
+                yaninoMap.behaviors.enable('drag');
+            }
+
+        $(window).on('resize load', function() {
+            if(windowWidth < 700) {
+                yaninoMap.behaviors.disable('drag');
+            } else {
+                yaninoMap.behaviors.enable('drag');
+            }
+        });
+    }
+    ymaps.ready(Yaninoinit);
+    console.log("ff");
+});
+</script>
